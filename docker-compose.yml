@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  backend:
+    image: storex-backend:v3
+    container_name: storex_backend_v3
+    ports:
+      - "${BACKEND_PORT}:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+    networks:
+      - app_net
+      - public_net
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:13
+    container_name: storex_postgres_v3
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - storex_db_volume:/var/lib/postgresql/data
+    networks:
+      - app_net
+
+networks:
+  app_net:
+    driver: bridge
+  public_net:
+    driver: bridge
+
+volumes:
+  storex_db_volume:
